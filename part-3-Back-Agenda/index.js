@@ -3,6 +3,7 @@ const app = express();
 
 app.use(express.json());
 
+
 let contacts= [
     { 
       "id": 1,
@@ -81,7 +82,7 @@ app.delete('/:id',(req,res)=>{
     }catch(error){
         console.error('There was an error deleting the register: ', error);
         res.status(500).json({
-            message: 'There was an issue deleting the register. ${error}'
+            message: `There was an issue deleting the register. ${error}`
         });
     }
 
@@ -90,21 +91,34 @@ app.delete('/:id',(req,res)=>{
 app.post('/persons/new',(req, res)=>{
 
     const body = req.body;
-    console.log('debug:', req.body);
+
+    console.log('Debug: ', req.body);
     try{
-        if(!body){
+        if(Object.keys(body).length === 0){
            return res.status(400).json({
-                message: 'There was an issue with the data. Verify the request.'
+                message: 'The body of the request is emtpy. Verify the body.'
             });
         }else{
             if(verifyRequest(body)){
                 try{
-                    body.id = generateId();
-                    contacts.push(body);
-                    
-                    res.status(200).json({
-                        message: 'POST succesfully executed.'
-                    });
+                    if(verifyUniqueName(body)){
+                        console.log('Its unique');
+
+                        body.id = generateId();
+                        //contacts.push(body);
+
+                        res.status(200).json({
+                            message: 'POST succesfully executed.'
+                        });
+
+
+                    }else{
+                        console.log('Its not');
+                        res.status(400).json({
+                            message : "There's already a contact with that name."
+                        })
+
+                    }
 
                 }catch(error){
                     console.log('Theres was an error creating the register:', error);
@@ -114,7 +128,7 @@ app.post('/persons/new',(req, res)=>{
                 }
             }else{
                 return res.status(400).json({
-                    message: 'There was an issue with the data. Verify the request.'
+                    message: 'The body of the request is empty either on the name or number.'
                 });
             }
 
@@ -130,13 +144,11 @@ app.post('/persons/new',(req, res)=>{
 });
 
 const verifyRequest = (json)=>{
-    if(json.name && json.number){
+    if(!json.name && !json.number){
         return false;
     }else{
         return true;
     }
-
-
 }
 
 const generateId= ()=>{
@@ -147,6 +159,19 @@ const generateId= ()=>{
     return maxId +1;
 }
 
+
+//pendiente: arreglar este verificador
+
+const verifyUniqueName =(json)=>{
+    const requestName = json.name;
+    contacts.map(contact=>{
+        if(requestName == contact.name){
+            return false;
+        }else{
+            return true;
+        }
+    })
+}
 
 const PORT = 8080;
 app.listen(PORT,()=>{
