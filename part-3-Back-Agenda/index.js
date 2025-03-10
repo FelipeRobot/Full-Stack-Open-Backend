@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+app.use(express.json());
+
 let contacts= [
     { 
       "id": 1,
@@ -83,13 +85,72 @@ app.delete('/:id',(req,res)=>{
         });
     }
 
-    
-    
+});
 
+app.post('/persons/new',(req, res)=>{
+
+    const body = req.body;
+    console.log('debug:', req.body);
+    try{
+        if(!body){
+           return res.status(400).json({
+                message: 'There was an issue with the data. Verify the request.'
+            });
+        }else{
+            if(verifyRequest(body)){
+                try{
+                    body.id = generateId();
+                    contacts.push(body);
+                    
+                    res.status(200).json({
+                        message: 'POST succesfully executed.'
+                    });
+
+                }catch(error){
+                    console.log('Theres was an error creating the register:', error);
+                    return res.status(400).json({
+                        message: 'There was an issue with the data. Verify the request.'
+                    });
+                }
+            }else{
+                return res.status(400).json({
+                    message: 'There was an issue with the data. Verify the request.'
+                });
+            }
+
+        }
+    }catch(error){
+        console.error('There was an error on the request:', error);
+        return res.status(500).json({
+            message : 'There was an error on the request.',
+            error : error
+        })
+    }
 
 });
 
+const verifyRequest = (json)=>{
+    if(json.name && json.number){
+        return false;
+    }else{
+        return true;
+    }
 
 
+}
 
-app.listen(8080);
+const generateId= ()=>{
+    const maxId = contacts.length > 0
+    ? Math.max(...contacts.map(n => n.id))
+    : 0
+
+    return maxId +1;
+}
+
+
+const PORT = 8080;
+app.listen(PORT,()=>{
+
+    console.log(`It's alive!!! on ${PORT}`);
+
+});
