@@ -105,7 +105,7 @@ app.post('/persons/new',(req, res)=>{
                         console.log('Its unique');
 
                         body.id = generateId();
-                        //contacts.push(body);
+                        contacts.push(body);
 
                         res.status(200).json({
                             message: 'POST succesfully executed.'
@@ -164,13 +164,20 @@ const generateId= ()=>{
 
 const verifyUniqueName =(json)=>{
     const requestName = json.name;
+    let its_unique;
+
     contacts.map(contact=>{
-        if(requestName == contact.name){
-            return false;
+        console.log( 'request name: ', requestName, '& contact: ', contact.name);
+
+        if(requestName === contact.name){
+            console.log('false');
+            its_unique = false;
         }else{
-            return true;
+            console.log('True');
+            its_unique= true;
         }
     })
+    return its_unique;
 }
 
 const PORT = 8080;
