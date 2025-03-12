@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js", 
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
     "db": "json-server --watch db.json --port 3001"
@@ -13,7 +13,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

@@ -1,9 +1,41 @@
 const express = require('express');
 const app = express();
 
+const morgan = require('morgan');
+
+
 app.use(express.json());
 
-
+// Middleware para capturar el cuerpo de la RESPUESTA
+app.use((req, res, next) => {
+    const originalSend = res.send;
+    res.send = function (body) {
+      res.locals.responseBody = body;
+      originalSend.call(res, body);
+    };
+    next();
+  });
+  
+  // Token para el cuerpo de la respuesta (sin typo)
+  morgan.token('response-body', (req, res) => {
+    return JSON.stringify(res.locals.responseBody);
+  });
+  
+  // Formato personalizado
+  const bodyFormat = (tokens, req, res) => {
+    return [
+      tokens.method(req, res),
+      tokens.url(req, res),
+      tokens.status(req, res),
+      tokens['response-time'](req, res) + ' ms',
+      '@',
+      new Date().toISOString(),
+      tokens['response-body'](req, res), // Usar el token correcto
+    ].join(' '); // Espacios para legibilidad
+  };
+  
+  app.use(express.json()); // Para acceder a req.body (cuerpo de la solicitud)
+  app.use(morgan(bodyFormat));
 let contacts= [
     { 
       "id": 1,
@@ -27,9 +59,7 @@ let contacts= [
     }
 ]
 
-
 app.get('/api/persons', (req, res)=>{
-
     res.send(contacts);
 
 })
