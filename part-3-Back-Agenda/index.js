@@ -213,7 +213,7 @@ const verifyUniqueName =(json)=>{
     return its_unique;
 }
 
-const PORT = 8080;
+const PORT = process.env.PORT|| 8080;
 app.listen(PORT,()=>{
 
     console.log(`It's alive!!! on ${PORT}`);
