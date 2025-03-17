@@ -7,7 +7,9 @@ const cors = require('cors');
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('dist'));
+app.use(express.static("dist"));
+
+
 
 // Middleware para capturar el cuerpo de la RESPUESTA
 app.use((req, res, next) => {
